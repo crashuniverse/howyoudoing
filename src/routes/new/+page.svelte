@@ -40,9 +40,9 @@
   <div>
     <label for="status">
       <select value={status} on:change={handleSelectStatus}>
+        <option value="great">great</option>
         <option value="good">good</option>
         <option value="ok">ok</option>
-        <option value="notok">not ok</option>
         <option value="bad">bad</option>
       </select>
     </label>
