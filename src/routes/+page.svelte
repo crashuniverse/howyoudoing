@@ -10,6 +10,7 @@
   let isLoading = true;
   let user;
   let statuses;
+  let groupedStatuses = {};
 
   async function getStatuses() {
     const { data: statuses, error } = await supabase
@@ -23,20 +24,25 @@
   }
 
   onMount(async() => {
-   statuses =  await getStatuses();
-   const { data, error } = await supabase.auth.getUser();
-   if (!error) {
-     user = data?.user;
-     isLoggedIn = true;
-     isLoading = false;
-   } else if (error) {
-    console.error(error?.message);
-    isLoggedIn = false;
-    setTimeout(() => {
-      goto('/login');
-    }, 2000);
-    isLoading = false;
-   }
+    statuses =  await getStatuses();
+    statuses.forEach((i) => {
+      const monthAndYear = new Date(i?.when).toLocaleString('en-US', {month: 'long', year: 'numeric'});
+      groupedStatuses[monthAndYear] = (groupedStatuses[monthAndYear] || []).concat(i);
+    });
+
+    const { data, error } = await supabase.auth.getUser();
+    if (!error) {
+      user = data?.user;
+      isLoggedIn = true;
+      isLoading = false;
+    } else if (error) {
+      console.error(error?.message);
+      isLoggedIn = false;
+      setTimeout(() => {
+        goto('/login');
+      }, 2000);
+      isLoading = false;
+    }
   });
 </script>
 
@@ -56,11 +62,15 @@
       <div>Loading...</div>
     {:else}
       {#if isLoggedIn}
-        <br /><br />
         {#if statuses}
           <div>
-            {#each statuses as item}
-              <div>{new Date(item?.when).getUTCDate()} - {item?.status}</div>
+            {#each Object.entries(groupedStatuses) as groupedItem}
+              <h3>{groupedItem?.[0]}</h3>
+              <div>
+                {#each groupedItem?.[1] as item}
+                  <div>{new Date(item?.when).getUTCDate()} - {item?.status}</div>
+                {/each}
+              </div>
             {/each}
           </div>
         {/if}
@@ -74,6 +84,10 @@
 <style>
   :root {
     --color-link: #0f79ce;
+  }
+
+  main {
+    padding: 1rem;
   }
 
   nav {
