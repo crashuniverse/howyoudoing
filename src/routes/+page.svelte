@@ -6,27 +6,12 @@
   let isLoggedIn = false;
   let isLoading = true;
   let user;
-  let statuses;
   let groupedStatuses = {};
 
-  async function getStatuses() {
-    const { data: statuses, error } = await supabase
-      .from('statuses')
-      .select('*')
-      .order('when');
-    if (error) {
-      console.error(error?.message);
-    }
-    return statuses;
-  }
+  /** @type {import('./$types').PageData} */
+  export let data;
 
   onMount(async() => {
-    statuses =  await getStatuses();
-    statuses.forEach((i) => {
-      const monthAndYear = new Date(i?.when).toLocaleString('en-US', {month: 'long', year: 'numeric'});
-      groupedStatuses[monthAndYear] = (groupedStatuses[monthAndYear] || []).concat(i);
-    });
-
     const { data, error } = await supabase.auth.getUser();
     if (!error) {
       user = data?.user;
@@ -40,6 +25,11 @@
       }, 2000);
       isLoading = false;
     }
+  });
+
+  data?.statuses.forEach((i) => {
+    const monthAndYear = new Date(i?.when).toLocaleString('en-US', {month: 'long', year: 'numeric'});
+    groupedStatuses[monthAndYear] = (groupedStatuses[monthAndYear] || []).concat(i);
   });
 </script>
 
@@ -55,25 +45,21 @@
     </nav>
   </header>
   <main>
-    {#if isLoading}
-      <div>Loading...</div>
-    {:else}
-      {#if isLoggedIn}
-        {#if statuses}
+    <h2>Statuses</h2>
+    {#if data?.statuses}
+      <div>
+        {#each Object.entries(groupedStatuses) as groupedItem}
+          <h3>{groupedItem?.[0]}</h3>
           <div>
-            {#each Object.entries(groupedStatuses) as groupedItem}
-              <h3>{groupedItem?.[0]}</h3>
-              <div>
-                {#each groupedItem?.[1] as item}
-                  <div>{new Date(item?.when).getUTCDate()} - {item?.status}</div>
-                {/each}
-              </div>
+            {#each groupedItem?.[1] as item}
+              <div>{new Date(item?.when).getUTCDate()} - {item?.status}</div>
             {/each}
           </div>
-        {/if}
-      {:else}
-        <div>User not logged in. Redirecting to <a href="/login">Login</a>.</div>
-      {/if}
+        {/each}
+      </div>
+    {/if}
+    {#if isLoading === false && !isLoggedIn}
+      <div>User not logged in. Redirecting to <a href="/login">Login</a>.</div>
     {/if}
   </main>
 </body>
