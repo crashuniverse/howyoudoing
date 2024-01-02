@@ -3,12 +3,11 @@
   import { goto } from '$app/navigation';
   import supabase from '$lib/supabaseClient';
 
-  let isLoggedIn = false;
+  let isLoggedIn;
   let isLoading = true;
   let user;
   let groupedStatuses = {};
 
-  /** @type {import('./$types').PageData} */
   export let data;
 
   onMount(async() => {
@@ -27,7 +26,7 @@
     }
   });
 
-  data?.statuses.forEach((i) => {
+  data?.statuses?.forEach((i) => {
     const monthAndYear = new Date(i?.when).toLocaleString('en-US', {month: 'long', year: 'numeric'});
     groupedStatuses[monthAndYear] = (groupedStatuses[monthAndYear] || []).concat(i);
   });
@@ -57,6 +56,9 @@
           </div>
         {/each}
       </div>
+    {/if}
+    {#if isLoading && isLoggedIn === undefined}
+      <div>Loading...</div>
     {/if}
     {#if isLoading === false && !isLoggedIn}
       <div>User not logged in. Redirecting to <a href="/login">Login</a>.</div>
