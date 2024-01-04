@@ -22,6 +22,17 @@
     const monthAndYear = new Date(i?.when).toLocaleString('en-US', {month: 'long', year: 'numeric'});
     groupedStatuses[monthAndYear] = (groupedStatuses[monthAndYear] || []).concat(i);
   });
+
+  const statusesStrings = {
+    great: 'great',
+    good: 'good',
+    ok: 'ok',
+    bad: 'bad',
+  };
+
+  function getStatusColor(status='bad') {
+    return statusesStrings[status];
+  }
 </script>
 
 <body>
@@ -38,16 +49,17 @@
   <main>
     <h2>Statuses</h2>
     {#if statuses?.length}
-      <div>
-        {#each Object.entries(groupedStatuses) as groupedItem}
-          <h3>{groupedItem?.[0]}</h3>
-          <div>
-            {#each groupedItem?.[1] as item}
-              <div>{new Date(item?.when).getUTCDate()} - {item?.status}</div>
-            {/each}
-          </div>
-        {/each}
-      </div>
+      {#each Object.entries(groupedStatuses) as groupedItem}
+        <h3>{groupedItem?.[0]}</h3>
+        <div>
+          {#each groupedItem?.[1] as item}
+            <div class="status-container">
+              <span>{new Date(item?.when).getUTCDate()} - {item?.status}</span>
+              <div class="status-color {getStatusColor(item?.status)}" title={item?.status}>&nbsp;</div>
+            </div>
+          {/each}
+        </div>
+      {/each}
     {/if}
     {#if isLoading}
       <div>Loading...</div>
@@ -68,5 +80,32 @@
 
   nav {
     margin-bottom: 0;
+  }
+
+  .status-container {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .status-color {
+    width: 10px;
+    height: 10px;
+  }
+  
+  .status-color.great {
+    background-color: #1abc9c;
+  }
+
+  .status-color.good {
+    background-color: #BBF7D0;
+  }
+
+  .status-color.ok {
+    background-color: #fecaca;
+  }
+  
+  .status-color.bad {
+    background-color: #e74c3c;
   }
 </style>
