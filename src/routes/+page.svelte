@@ -23,15 +23,37 @@
     groupedStatuses[monthAndYear] = (groupedStatuses[monthAndYear] || []).concat(i);
   });
 
-  const statusesStrings = {
-    great: 'great',
-    good: 'good',
-    ok: 'ok',
-    bad: 'bad',
-  };
+  function getRowsFromGroup(d) {
+    const date = new Date(d);
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const numberOfDays = new Date(year, month + 1, 0).getDate();
+    const rows = Math.ceil(numberOfDays / 7);
+    return new Array(rows);
+  }
 
-  function getStatusColor(status='bad') {
-    return statusesStrings[status];
+  function getCurrentCell(d, rowIndex, colIndex) {
+    const date = new Date(d?.[0]?.when);
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const firstDate = new Date(year, month, 1);
+    const firstDateDay = firstDate.getDay();
+    // to find the corresponding date, we subtract first day and add 2 for some reason
+    const isFound = d?.find(i => new Date(i?.when).getDate() === 7 * rowIndex + colIndex - firstDateDay + 2);
+    return isFound;
+  }
+
+  function getStatusClass(status='empty') {
+    if (status === 'great') {
+      return 'status-great';
+    } else if (status === 'good') {
+      return 'status-good';
+    } else if (status === 'ok') {
+      return 'status-ok';
+    } else if (status === 'bad') {
+      return 'status-bad';
+    }
+    return '';
   }
 </script>
 
@@ -51,14 +73,21 @@
     {#if statuses?.length}
       {#each Object.entries(groupedStatuses) as groupedItem}
         <h3>{groupedItem?.[0]}</h3>
-        <div>
-          {#each groupedItem?.[1] as item}
-            <div class="status-container">
-              <span>{new Date(item?.when).getUTCDate()} - {item?.status}</span>
-              <div class="status-color {getStatusColor(item?.status)}" title={item?.status}>&nbsp;</div>
+        <div class="calendar">
+          <div class="row header">
+            {#each ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] as day}
+              <div class="cell header-cell">{day}</div>
+            {/each}
+          </div>
+          {#each getRowsFromGroup(groupedItem?.[1]?.[0].when) as item, index}
+            <div class="row">
+              {#each new Array(7) as cell, indexCell}
+                <div class="cell {getStatusClass(getCurrentCell(groupedItem?.[1], index, indexCell)?.status)}">&nbsp;</div>
+              {/each}
             </div>
           {/each}
         </div>
+        <br /><br />
       {/each}
     {/if}
     {#if isLoading}
@@ -88,24 +117,45 @@
     align-items: center;
   }
 
-  .status-color {
-    width: 10px;
-    height: 10px;
+  .status-row {
+    display: flex;
+  }
+
+  .calendar {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .row {
+    display: flex;
+    gap: 10px;
   }
   
-  .status-color.great {
+  .cell {
+    width: 40px;
+    height: 40px;
+    background-color: #fafafa;
+  }
+  
+  .cell.header-cell {
+    background-color: initial;
+    height: initial;
+  }
+
+  .status-great {
     background-color: #1abc9c;
   }
 
-  .status-color.good {
-    background-color: #BBF7D0;
+  .status-good {
+    background-color: #bbf7d0;
   }
 
-  .status-color.ok {
+  .status-ok {
     background-color: #fecaca;
   }
   
-  .status-color.bad {
+  .status-bad {
     background-color: #e74c3c;
   }
 </style>
