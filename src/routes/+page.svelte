@@ -23,6 +23,9 @@
     groupedStatuses[monthAndYear] = (groupedStatuses[monthAndYear] || []).concat(i);
   });
 
+  const sortedGroups = Object.entries(groupedStatuses)
+    .sort((a, b) => new Date(b?.[1]?.[0]?.when) - new Date(a?.[1]?.[0]?.when));
+
   function getRowsFromGroup(d) {
     const date = new Date(d);
     const year = date.getFullYear();
@@ -71,7 +74,7 @@
   <main>
     <h2>Statuses</h2>
     {#if statuses?.length}
-      {#each Object.entries(groupedStatuses) as groupedItem}
+      {#each sortedGroups as groupedItem}
         <h3>{groupedItem?.[0]}</h3>
         <div class="calendar">
           <div class="row header">
