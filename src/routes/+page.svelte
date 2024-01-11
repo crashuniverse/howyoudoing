@@ -85,7 +85,10 @@
           {#each getRowsFromGroup(groupedItem?.[1]?.[0].when) as item, index}
             <div class="row">
               {#each new Array(7) as cell, indexCell}
-                <div class="cell {getStatusClass(getCurrentCell(groupedItem?.[1], index, indexCell)?.status)}">&nbsp;</div>
+                <div
+                  class="cell {getStatusClass(getCurrentCell(groupedItem?.[1], index, indexCell)?.status)}"
+                  title={getCurrentCell(groupedItem?.[1], index, indexCell)?.status + ' on ' + new Date(getCurrentCell(groupedItem?.[1], index, indexCell)?.when)?.toUTCString()}
+                >&nbsp;</div>
               {/each}
             </div>
           {/each}
