@@ -41,6 +41,8 @@
           <div>
             <button on:click={signup}>Signup</button>
           </div>
+          <br/>
+          <div>Already have an account? <a href="/login">Login</a></div>
           {#if isLoading}
           <div>Creating user ...</div>
           {/if}
