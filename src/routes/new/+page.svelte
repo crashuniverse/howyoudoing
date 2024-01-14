@@ -16,7 +16,7 @@
     if (!error) {
       isCreated = true;
       setTimeout(() => {
-        goto('/');
+        goto('/dashboard');
       }, 2000);
     }
     return data;

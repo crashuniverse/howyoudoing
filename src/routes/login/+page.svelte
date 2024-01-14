@@ -22,7 +22,7 @@
 
     if (!error) {
       setTimeout(() => {
-        goto('/');
+        goto('/dashboard');
       }, 1000);
     }
   }
