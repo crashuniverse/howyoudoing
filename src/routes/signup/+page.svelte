@@ -26,7 +26,7 @@
     <h1>how you doing</h1>
   </header>
   <main>
-    <h2>Signup</h2>
+    <h2>signup</h2>
     <div>
       {#if isAuthenticated === false}
         <form>

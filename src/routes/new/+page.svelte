@@ -24,7 +24,7 @@
 
   let status = 'good';
   const date = new Date();
-  const todayInString = '' + date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+  const todayInString = `${date.getFullYear()}-${date.getMonth() <= 8 ? '0' : ''}${date.getMonth() + 1}-${date.getDate()}`;
   let when = todayInString;
   let isLoading;
   let isCreated;

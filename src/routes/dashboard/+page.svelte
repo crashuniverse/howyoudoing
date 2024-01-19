@@ -87,7 +87,7 @@
               {#each new Array(7) as cell, indexCell}
                 <div
                   class="cell {getStatusClass(getCurrentCell(groupedItem?.[1], index, indexCell)?.status)}"
-                  title={getCurrentCell(groupedItem?.[1], index, indexCell)?.status + ' on ' + new Date(getCurrentCell(groupedItem?.[1], index, indexCell)?.when)?.toUTCString()}
+                  title={getCurrentCell(groupedItem?.[1], index, indexCell)?.when ? getCurrentCell(groupedItem?.[1], index, indexCell)?.status + ' on ' + new Date(getCurrentCell(groupedItem?.[1], index, indexCell)?.when)?.toUTCString() : ''}
                 >&nbsp;</div>
               {/each}
             </div>
